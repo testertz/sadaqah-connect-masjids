@@ -1,0 +1,75 @@
+
+import { Mosque, Donation } from '@/types';
+
+export const mockMosques: Mosque[] = [
+  {
+    id: '1',
+    name: 'Masjid Al-Noor',
+    location: 'Downtown, City Center',
+    image: 'https://images.unsplash.com/photo-1564769625905-50c4ba2b3329?w=800&h=600&fit=crop',
+    description: 'A beautiful community mosque serving the downtown area with daily prayers, educational programs, and community outreach.',
+    donationGoal: 50000,
+    currentDonations: 32500,
+    category: 'Community Services',
+    verified: true,
+  },
+  {
+    id: '2',
+    name: 'Masjid Ar-Rahman',
+    location: 'Westside District',
+    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800&h=600&fit=crop',
+    description: 'Historic mosque with rich heritage, focusing on youth education and family programs.',
+    donationGoal: 75000,
+    currentDonations: 45000,
+    category: 'Education',
+    verified: true,
+  },
+  {
+    id: '3',
+    name: 'Masjid Al-Falah',
+    location: 'East Valley',
+    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+    description: 'Growing community mosque with expansion plans to serve more families in the area.',
+    donationGoal: 100000,
+    currentDonations: 28000,
+    category: 'Expansion',
+    verified: true,
+  },
+  {
+    id: '4',
+    name: 'Masjid At-Tawbah',
+    location: 'Northern Heights',
+    image: 'https://images.unsplash.com/photo-1542816417-0983c9c9ad53?w=800&h=600&fit=crop',
+    description: 'Community-focused mosque with food programs for the needy and emergency relief services.',
+    donationGoal: 60000,
+    currentDonations: 52000,
+    category: 'Relief Programs',
+    verified: true,
+  },
+];
+
+export const mockDonations: Donation[] = [
+  {
+    id: '1',
+    mosqueId: '1',
+    mosqueName: 'Masjid Al-Noor',
+    amount: 100,
+    donorName: 'Ahmad Ali',
+    donorEmail: 'ahmad@example.com',
+    type: 'general',
+    message: 'May Allah accept this donation',
+    timestamp: new Date('2024-01-15'),
+    paymentMethod: 'Credit Card',
+  },
+  {
+    id: '2',
+    mosqueId: '2',
+    mosqueName: 'Masjid Ar-Rahman',
+    amount: 250,
+    donorName: 'Fatima Khan',
+    donorEmail: 'fatima@example.com',
+    type: 'zakat',
+    timestamp: new Date('2024-01-14'),
+    paymentMethod: 'PayPal',
+  },
+];
