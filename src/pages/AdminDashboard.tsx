@@ -1,439 +1,404 @@
+
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Building, Users, TrendingUp, DollarSign, Eye, Edit, Trash2, Plus, Search, Filter } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Users, 
+  Mosque as MosqueIcon, 
+  TrendingUp, 
+  DollarSign, 
+  Plus, 
+  Edit, 
+  Trash2,
+  CheckCircle,
+  Clock,
+  XCircle
+} from 'lucide-react';
 import { mockAdminStats, mockMosques, mockDonations, mockUsers } from '@/data/mockData';
-import { useToast } from '@/hooks/use-toast';
 
 const AdminDashboard = () => {
-  const [searchTermMosques, setSearchTermMosques] = useState('');
-  const [searchTermDonations, setSearchTermDonations] = useState('');
-  const [searchTermUsers, setSearchTermUsers] = useState('');
-  const [mosqueFilter, setMosqueFilter] = useState('all');
-  const [donationFilter, setDonationFilter] = useState('all');
-  const [userFilter, setUserFilter] = useState('all');
-  const { toast } = useToast();
+  const [stats] = useState(mockAdminStats);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showAddMosque, setShowAddMosque] = useState(false);
 
-  const handleEditMosque = (id: string) => {
-    console.log('Edit mosque:', id);
-    toast({
-      title: "Edit Mosque",
-      description: `Editing mosque with ID: ${id}`,
-    });
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-TZ', {
+      style: 'currency',
+      currency: 'TZS',
+      minimumFractionDigits: 0
+    }).format(amount);
   };
 
-  const handleDeleteMosque = (id: string) => {
-    console.log('Delete mosque:', id);
-    toast({
-      title: "Delete Mosque",
-      description: `Deleting mosque with ID: ${id}`,
-    });
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'pending':
+        return <Clock className="h-4 w-4 text-yellow-600" />;
+      case 'failed':
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-600" />;
+    }
   };
 
-  const handleViewDonation = (id: string) => {
-    console.log('View donation:', id);
-     toast({
-      title: "View Donation",
-      description: `Viewing donation with ID: ${id}`,
-    });
-  };
-
-  const handleEditDonation = (id: string) => {
-    console.log('Edit donation:', id);
-     toast({
-      title: "Edit Donation",
-      description: `Editing donation with ID: ${id}`,
-    });
-  };
-
-  const handleDeleteDonation = (id: string) => {
-    console.log('Delete donation:', id);
-     toast({
-      title: "Delete Donation",
-      description: `Deleting donation with ID: ${id}`,
-    });
-  };
-
-  const handleViewUser = (id: string) => {
-    console.log('View user:', id);
-     toast({
-      title: "View User",
-      description: `Viewing user with ID: ${id}`,
-    });
-  };
-
-  const handleEditUser = (id: string) => {
-    console.log('Edit user:', id);
-     toast({
-      title: "Edit User",
-      description: `Editing user with ID: ${id}`,
-    });
-  };
-
-  const handleDeleteUser = (id: string) => {
-    console.log('Delete user:', id);
-     toast({
-      title: "Delete User",
-      description: `Deleting user with ID: ${id}`,
-    });
-  };
-
-  const filteredMosques = mockMosques.filter(mosque => {
-    const searchTermMatch = mosque.name.toLowerCase().includes(searchTermMosques.toLowerCase()) ||
-      mosque.location.toLowerCase().includes(searchTermMosques.toLowerCase());
-    const filterMatch = mosqueFilter === 'all' || mosque.category.toLowerCase() === mosqueFilter;
-    return searchTermMatch && filterMatch;
-  });
-
-  const filteredDonations = mockDonations.filter(donation => {
-    const searchTermMatch = donation.donorName.toLowerCase().includes(searchTermDonations.toLowerCase()) ||
-      donation.mosqueName.toLowerCase().includes(searchTermDonations.toLowerCase());
-    const filterMatch = donationFilter === 'all' || donation.type.toLowerCase() === donationFilter;
-    return searchTermMatch && filterMatch;
-  });
-
-  const filteredUsers = mockUsers.filter(user => {
-    const searchTermMatch = user.name.toLowerCase().includes(searchTermUsers.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTermUsers.toLowerCase());
-    const filterMatch = userFilter === 'all' || (userFilter === 'admin' ? user.isAdmin : !user.isAdmin);
-    return searchTermMatch && filterMatch;
-  });
-
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
-
-  const donationData = mockDonations.reduce((acc: { [key: string]: number }, donation) => {
-    acc[donation.mosqueName] = (acc[donation.mosqueName] || 0) + donation.amount;
-    return acc;
-  }, {});
-
-  const pieData = Object.entries(donationData).map(([name, value]) => ({ name, value }));
+  const TabButton = ({ id, label, isActive, onClick }: any) => (
+    <button
+      onClick={() => onClick(id)}
+      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+        isActive 
+          ? 'bg-emerald-600 text-white shadow-md' 
+          : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-600'
+      }`}
+    >
+      {label}
+    </button>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-          <Button variant="outline">Logout</Button>
-        </div>
-      </header>
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-500" />
-                Total Donations
-              </CardTitle>
-              <CardDescription>Overall donations received</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-800">TZS {mockAdminStats.totalDonations.toLocaleString()}</div>
-              <p className="text-sm text-gray-500">
-                <span className="text-green-500">+12%</span> from last month
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building className="h-5 w-5 text-blue-500" />
-                Total Mosques
-              </CardTitle>
-              <CardDescription>Number of registered mosques</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-800">{mockAdminStats.totalMosques}</div>
-              <p className="text-sm text-gray-500">
-                <span className="text-green-500">+4</span> new mosques this month
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-purple-500" />
-                Total Users
-              </CardTitle>
-              <CardDescription>Number of registered users</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-800">{mockAdminStats.totalUsers}</div>
-              <p className="text-sm text-gray-500">
-                <span className="text-red-500">-2%</span> fewer users than last month
-              </p>
-            </CardContent>
-          </Card>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
+          <p className="text-gray-600">Manage the Sadaka platform and monitor donations</p>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="mosques">Mosques</TabsTrigger>
-            <TabsTrigger value="donations">Donations</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-          </TabsList>
+        {/* Navigation Tabs */}
+        <div className="flex space-x-2 mb-8 bg-white p-1 rounded-lg shadow-sm w-fit">
+          <TabButton id="overview" label="Overview" isActive={activeTab === 'overview'} onClick={setActiveTab} />
+          <TabButton id="mosques" label="Mosques" isActive={activeTab === 'mosques'} onClick={setActiveTab} />
+          <TabButton id="donations" label="Donations" isActive={activeTab === 'donations'} onClick={setActiveTab} />
+          <TabButton id="users" label="Users" isActive={activeTab === 'users'} onClick={setActiveTab} />
+        </div>
 
-          <TabsContent value="overview" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Donations Overview</CardTitle>
-                <CardDescription>Graphical representation of donations</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={mockDonations}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="mosqueName" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="amount" fill="#82ca9d" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+        {/* Overview Tab */}
+        {activeTab === 'overview' && (
+          <>
+            {/* Stats Cards */}
+            <div className="grid md:grid-cols-4 gap-6 mb-8">
+              <Card className="border-emerald-100 hover:shadow-lg transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Total Donations</p>
+                      <p className="text-2xl font-bold text-emerald-600">{formatCurrency(stats.totalDonations)}</p>
+                    </div>
+                    <div className="bg-emerald-100 p-3 rounded-full">
+                      <DollarSign className="h-6 w-6 text-emerald-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Donations by Mosque</CardTitle>
-                <CardDescription>Pie chart of donations per mosque</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      label
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              <Card className="border-blue-100 hover:shadow-lg transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Total Mosques</p>
+                      <p className="text-2xl font-bold text-blue-600">{stats.totalMosques}</p>
+                    </div>
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <MosqueIcon className="h-6 w-6 text-blue-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          <TabsContent value="mosques" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="text"
-                  placeholder="Search mosques..."
-                  value={searchTermMosques}
-                  onChange={(e) => setSearchTermMosques(e.target.value)}
-                />
-                <Button variant="outline">
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
-                </Button>
-              </div>
-              <div className="flex items-center space-x-2">
-                <select
-                  className="border rounded px-3 py-2"
-                  value={mosqueFilter}
-                  onChange={(e) => setMosqueFilter(e.target.value)}
-                >
-                  <option value="all">All Categories</option>
-                  {[...new Set(mockMosques.map(mosque => mosque.category.toLowerCase()))].map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-                <Button variant="outline">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
-              </div>
-              <Button>
+              <Card className="border-purple-100 hover:shadow-lg transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Total Users</p>
+                      <p className="text-2xl font-bold text-purple-600">{stats.totalUsers}</p>
+                    </div>
+                    <div className="bg-purple-100 p-3 rounded-full">
+                      <Users className="h-6 w-6 text-purple-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-orange-100 hover:shadow-lg transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Growth Rate</p>
+                      <p className="text-2xl font-bold text-orange-600">+12.5%</p>
+                    </div>
+                    <div className="bg-orange-100 p-3 rounded-full">
+                      <TrendingUp className="h-6 w-6 text-orange-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="grid lg:grid-cols-2 gap-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Donations</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {stats.recentDonations.map((donation) => (
+                      <div key={donation.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          {getStatusIcon(donation.status)}
+                          <div>
+                            <p className="font-medium">{donation.mosqueName}</p>
+                            <p className="text-sm text-gray-600">{donation.donorName}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-emerald-600">{formatCurrency(donation.amount)}</p>
+                          <p className="text-xs text-gray-500">{donation.timestamp.toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Top Performing Mosques</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {stats.topMosques.map((mosque, index) => (
+                      <div key={mosque.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="bg-emerald-100 w-8 h-8 rounded-full flex items-center justify-center">
+                            <span className="font-bold text-emerald-600">#{index + 1}</span>
+                          </div>
+                          <div>
+                            <p className="font-medium">{mosque.name}</p>
+                            <p className="text-sm text-gray-600">{mosque.location}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-emerald-600">{formatCurrency(mosque.currentDonations)}</p>
+                          <p className="text-xs text-gray-500">
+                            {Math.round((mosque.currentDonations / mosque.donationGoal) * 100)}% funded
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </>
+        )}
+
+        {/* Mosques Tab */}
+        {activeTab === 'mosques' && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Manage Mosques</CardTitle>
+              <Button 
+                onClick={() => setShowAddMosque(true)}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Mosque
               </Button>
-            </div>
-
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredMosques.map((mosque) => (
-                  <TableRow key={mosque.id}>
-                    <TableCell>{mosque.name}</TableCell>
-                    <TableCell>{mosque.location}</TableCell>
-                    <TableCell>{mosque.category}</TableCell>
-                    <TableCell className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditMosque(mosque.id)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteMosque(mosque.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Region</TableHead>
+                    <TableHead>Donations</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-
-          <TabsContent value="donations" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="text"
-                  placeholder="Search donations..."
-                  value={searchTermDonations}
-                  onChange={(e) => setSearchTermDonations(e.target.value)}
-                />
-                <Button variant="outline">
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
-                </Button>
-              </div>
-              <div className="flex items-center space-x-2">
-                <select
-                  className="border rounded px-3 py-2"
-                  value={donationFilter}
-                  onChange={(e) => setDonationFilter(e.target.value)}
-                >
-                  <option value="all">All Types</option>
-                  {[...new Set(mockDonations.map(donation => donation.type.toLowerCase()))].map(type => (
-                    <option key={type} value={type}>{type}</option>
+                </TableHeader>
+                <TableBody>
+                  {mockMosques.map((mosque) => (
+                    <TableRow key={mosque.id}>
+                      <TableCell className="font-medium">{mosque.name}</TableCell>
+                      <TableCell>{mosque.location}</TableCell>
+                      <TableCell>{mosque.region}</TableCell>
+                      <TableCell className="font-bold text-emerald-600">
+                        {formatCurrency(mosque.currentDonations)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={mosque.verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                          {mosque.verified ? 'Verified' : 'Pending'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </select>
-                <Button variant="outline">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
-              </div>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Donation
-              </Button>
-            </div>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Donor</TableHead>
-                  <TableHead>Mosque</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredDonations.map((donation) => (
-                  <TableRow key={donation.id}>
-                    <TableCell>{donation.donorName}</TableCell>
-                    <TableCell>{donation.mosqueName}</TableCell>
-                    <TableCell>TZS {donation.amount.toLocaleString()}</TableCell>
-                    <TableCell>{donation.type}</TableCell>
-                    <TableCell className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleViewDonation(donation.id)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleEditDonation(donation.id)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteDonation(donation.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+        {/* Donations Tab */}
+        {activeTab === 'donations' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>All Donations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Donor</TableHead>
+                    <TableHead>Mosque</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Payment</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
+                </TableHeader>
+                <TableBody>
+                  {mockDonations.map((donation) => (
+                    <TableRow key={donation.id}>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{donation.donorName}</p>
+                          <p className="text-sm text-gray-600">{donation.donorEmail}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">{donation.mosqueName}</TableCell>
+                      <TableCell className="font-bold text-emerald-600">
+                        {formatCurrency(donation.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-blue-100 text-blue-800">
+                          {donation.type.charAt(0).toUpperCase() + donation.type.slice(1)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{donation.timestamp.toLocaleDateString('en-GB')}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          {getStatusIcon(donation.status)}
+                          <span className="capitalize">{donation.status}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="capitalize">{donation.paymentMethod}</p>
+                          <p className="text-sm text-gray-600">{donation.paymentDetails}</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
-          <TabsContent value="users" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="text"
-                  placeholder="Search users..."
-                  value={searchTermUsers}
-                  onChange={(e) => setSearchTermUsers(e.target.value)}
-                />
-                <Button variant="outline">
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
-                </Button>
-              </div>
-              <div className="flex items-center space-x-2">
-                <select
-                  className="border rounded px-3 py-2"
-                  value={userFilter}
-                  onChange={(e) => setUserFilter(e.target.value)}
-                >
-                  <option value="all">All Users</option>
-                  <option value="admin">Admins</option>
-                  <option value="non-admin">Non-Admins</option>
-                </select>
-                <Button variant="outline">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
-              </div>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add User
-              </Button>
-            </div>
-
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Admin</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.isAdmin ? 'Yes' : 'No'}</TableCell>
-                    <TableCell className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleViewUser(user.id)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleEditUser(user.id)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteUser(user.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+        {/* Users Tab */}
+        {activeTab === 'users' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>User Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Total Donated</TableHead>
+                    <TableHead>Donations</TableHead>
+                    <TableHead>Join Date</TableHead>
+                    <TableHead>Role</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-        </Tabs>
+                </TableHeader>
+                <TableBody>
+                  {mockUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{user.phone || 'N/A'}</TableCell>
+                      <TableCell className="font-bold text-emerald-600">
+                        {formatCurrency(user.totalDonated)}
+                      </TableCell>
+                      <TableCell>{user.donationCount}</TableCell>
+                      <TableCell>{user.joinedDate.toLocaleDateString('en-GB')}</TableCell>
+                      <TableCell>
+                        <Badge className={user.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}>
+                          {user.isAdmin ? 'Admin' : 'User'}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Add Mosque Modal (simplified) */}
+        {showAddMosque && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle>Add New Mosque</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Mosque Name</Label>
+                  <Input id="name" placeholder="Enter mosque name" />
+                </div>
+                <div>
+                  <Label htmlFor="location">Location</Label>
+                  <Input id="location" placeholder="Enter location" />
+                </div>
+                <div>
+                  <Label htmlFor="region">Region</Label>
+                  <Input id="region" placeholder="Enter region" />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea id="description" placeholder="Enter description" />
+                </div>
+                <div className="flex space-x-3">
+                  <Button 
+                    onClick={() => setShowAddMosque(false)}
+                    variant="outline" 
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={() => setShowAddMosque(false)}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    Add Mosque
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

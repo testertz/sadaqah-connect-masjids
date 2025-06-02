@@ -1,228 +1,241 @@
+
 import React, { useState } from 'react';
-import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FeaturedMosques from '@/components/FeaturedMosques';
 import DonationModal from '@/components/DonationModal';
 import LoginModal from '@/components/LoginModal';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Heart, Star, Users, Building, Shield, Globe } from 'lucide-react';
 import { mockMosques } from '@/data/mockData';
 import { Mosque } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Heart, Mosque as MosqueIcon, Users, Globe } from 'lucide-react';
 
 const Index = () => {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [selectedMosque, setSelectedMosque] = useState<Mosque | null>(null);
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
 
-  const handleLogin = () => {
+  const handleDonate = (mosque: Mosque) => {
+    setSelectedMosque(mosque);
+    setIsDonationModalOpen(true);
+  };
+
+  const handleViewDetails = (mosque: Mosque) => {
+    handleDonate(mosque);
+  };
+
+  const handleLogin = (name: string, email: string) => {
     setIsLoggedIn(true);
-    setIsLoginModalOpen(false);
+    setUserName(name);
+  };
+
+  const handleDonateClick = () => {
+    document.getElementById('mosques')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-50">
       <Header 
         onLoginClick={() => setIsLoginModalOpen(true)}
         isLoggedIn={isLoggedIn}
-        userName={isLoggedIn ? "Ahmed Hassan" : undefined}
-        isAdmin={false}
+        userName={userName}
       />
       
-      <HeroSection />
+      <HeroSection onDonateClick={handleDonateClick} />
       
       <FeaturedMosques 
         mosques={mockMosques.slice(0, 4)}
-        onDonate={(mosque) => {
-          setSelectedMosque(mosque);
-          setIsDonationModalOpen(true);
-        }}
-        onViewDetails={(mosque) => {
-          console.log('View details for:', mosque.name);
-        }}
+        onDonate={handleDonate}
+        onViewDetails={handleViewDetails}
       />
 
-      {/* Why Choose Sadaka Section */}
-      <section className="py-16 bg-emerald-50">
+      {/* Enhanced About Section */}
+      <section id="about" className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Why Choose Sadaka?</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Trusted platform connecting donors with verified mosques across Tanzania
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-800 mb-6">About Sadaka Tanzania</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Connecting the hearts of Tanzanian Muslims with their local masajid through the blessing of giving. 
+              Our platform ensures transparent, secure donations reach verified mosques across Tanzania.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center border border-emerald-100">
-              <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="h-8 w-8 text-emerald-600" />
+          <div className="grid md:grid-cols-3 gap-12 mb-16">
+            <div className="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-200">
+                <Heart className="h-10 w-10 text-emerald-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-4">100% Verified</h3>
-              <p className="text-gray-600">All mosques are verified and registered with proper documentation</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center border border-emerald-100">
-              <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Building className="h-8 w-8 text-emerald-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Direct Impact</h3>
-              <p className="text-gray-600">Your donations go directly to mosques for immediate community benefit</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-lg text-center border border-emerald-100">
-              <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Heart className="h-8 w-8 text-emerald-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Barakah Guaranteed</h3>
-              <p className="text-gray-600">Supporting Islamic education and community development with transparency</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Statistics Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-emerald-600 mb-2">142M+</div>
-              <p className="text-gray-600">Total Donations (TZS)</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-emerald-600 mb-2">1,248</div>
-              <p className="text-gray-600">Active Donors</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-emerald-600 mb-2">56</div>
-              <p className="text-gray-600">Verified Mosques</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-emerald-600 mb-2">26</div>
-              <p className="text-gray-600">Regions Covered</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="py-16 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold mb-6">About Sadaka Platform</h2>
-              <p className="text-xl mb-6 opacity-90">
-                Sadaka is Tanzania's first dedicated platform for mosque donations, built with Islamic values 
-                and modern technology to serve our ummah.
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Sadaka Made Simple</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Easy, secure donations to verified mosques across Tanzania with multiple payment options including mobile money.
               </p>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Star className="h-6 w-6" />
-                  <span>Sharia-compliant donation processing</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Users className="h-6 w-6" />
-                  <span>Community-driven platform</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Globe className="h-6 w-6" />
-                  <span>Serving all regions of Tanzania</span>
-                </div>
-              </div>
             </div>
-            <div className="text-center">
-              <div className="bg-white/10 p-8 rounded-2xl backdrop-blur-sm">
-                <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
-                <p className="text-lg opacity-90">
-                  "To strengthen the Islamic community in Tanzania by making mosque support 
-                  accessible, transparent, and impactful for every Muslim."
-                </p>
+
+            <div className="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-200">
+                <MosqueIcon className="h-10 w-10 text-emerald-600" />
               </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Verified Masajid</h3>
+              <p className="text-gray-600 leading-relaxed">
+                All mosques are thoroughly verified to ensure your donations reach legitimate Islamic institutions.
+              </p>
+            </div>
+
+            <div className="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-200">
+                <Users className="h-10 w-10 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Community Impact</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Supporting Islamic education, community services, and spiritual growth across Tanzania.
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <Button 
+              onClick={() => document.getElementById('mosques')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white px-8 py-4 text-lg"
+            >
+              <Heart className="mr-2 h-5 w-5" />
+              Start Donating Today
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced Stats Section */}
+      <section className="py-20 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Our Impact Across Tanzania</h2>
+            <p className="text-emerald-100 text-lg">Building stronger Muslim communities through your generous contributions</p>
+          </div>
+          
+          <div className="grid md:grid-cols-4 gap-8 text-center">
+            <div className="transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl font-bold mb-2">50+</div>
+              <div className="text-emerald-100 text-lg">Verified Mosques</div>
+              <div className="text-emerald-200 text-sm mt-1">Across all regions</div>
+            </div>
+            <div className="transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl font-bold mb-2">TZS 2.5B+</div>
+              <div className="text-emerald-100 text-lg">Total Donations</div>
+              <div className="text-emerald-200 text-sm mt-1">Since platform launch</div>
+            </div>
+            <div className="transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl font-bold mb-2">10K+</div>
+              <div className="text-emerald-100 text-lg">Active Donors</div>
+              <div className="text-emerald-200 text-sm mt-1">Growing daily</div>
+            </div>
+            <div className="transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl font-bold mb-2">26</div>
+              <div className="text-emerald-100 text-lg">Regions Covered</div>
+              <div className="text-emerald-200 text-sm mt-1">Nationwide reach</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 bg-emerald-50">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-gray-800 mb-6">Get In Touch</h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Have questions about donations or want to register your mosque? We're here to help.
-          </p>
-          
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="bg-white p-6 rounded-xl shadow-lg">
-              <h3 className="font-bold text-gray-800 mb-2">Email</h3>
-              <p className="text-emerald-600">support@sadaka.tz</p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-lg">
-              <h3 className="font-bold text-gray-800 mb-2">Phone</h3>
-              <p className="text-emerald-600">+255 (0) 123 456 789</p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-lg">
-              <h3 className="font-bold text-gray-800 mb-2">Office</h3>
-              <p className="text-emerald-600">Dar es Salaam, Tanzania</p>
-            </div>
-          </div>
-
-          <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3">
-            Register Your Mosque
-          </Button>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
+      <section id="contact" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-emerald-600 p-2 rounded-lg">
-                  <Heart className="h-6 w-6 text-white" fill="white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">Sadaka</h3>
-                  <p className="text-sm text-gray-400">للخير والعطاء</p>
-                </div>
-              </div>
-              <p className="text-gray-400">
-                Supporting Tanzania's mosques through technology and faith.
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-6">Contact Us</h2>
+              <p className="text-xl text-gray-600">
+                Have questions? We're here to help you make a difference.
               </p>
             </div>
 
-            <div>
-              <h4 className="font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="/mosques" className="hover:text-emerald-400">Find Mosques</a></li>
-                <li><a href="/dashboard" className="hover:text-emerald-400">Dashboard</a></li>
-                <li><a href="#about" className="hover:text-emerald-400">About Us</a></li>
-                <li><a href="#contact" className="hover:text-emerald-400">Contact</a></li>
-              </ul>
-            </div>
+            <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Get in Touch</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <Globe className="h-5 w-5 text-emerald-600 mr-3" />
+                    <span>support@sadaka.tz</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Globe className="h-5 w-5 text-emerald-600 mr-3" />
+                    <span>+255 (0) 700 123 456</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Globe className="h-5 w-5 text-emerald-600 mr-3" />
+                    <span>Dar es Salaam, Tanzania</span>
+                  </div>
+                </div>
+              </div>
 
-            <div>
-              <h4 className="font-bold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-emerald-400">Help Center</a></li>
-                <li><a href="#" className="hover:text-emerald-400">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-emerald-400">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-emerald-400">FAQs</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold mb-4">Follow Us</h4>
-              <div className="flex space-x-4">
-                <Badge variant="secondary" className="bg-emerald-600 text-white">Facebook</Badge>
-                <Badge variant="secondary" className="bg-emerald-600 text-white">WhatsApp</Badge>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Support Hours</h3>
+                <div className="space-y-2 text-gray-600">
+                  <p>Sunday - Thursday: 8:00 AM - 6:00 PM</p>
+                  <p>Friday: 2:00 PM - 6:00 PM (After Jumu'ah)</p>
+                  <p>Saturday: 9:00 AM - 4:00 PM</p>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Sadaka Platform. All rights reserved. | Built with ❤️ for the Ummah</p>
+      {/* Enhanced Footer */}
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-2 rounded-lg">
+                  <Heart className="h-6 w-6 text-white" fill="white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold">Sadaka</h3>
+                  <p className="text-sm text-emerald-400">للخير والعطاء</p>
+                </div>
+              </div>
+              <p className="text-gray-400 leading-relaxed">
+                Connecting hearts, building communities through the blessed act of giving across Tanzania.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4 text-lg">Quick Links</h4>
+              <ul className="space-y-3 text-gray-400">
+                <li><a href="#home" className="hover:text-emerald-400 transition-colors">Home</a></li>
+                <li><a href="#mosques" className="hover:text-emerald-400 transition-colors">Mosques</a></li>
+                <li><a href="#about" className="hover:text-emerald-400 transition-colors">About Us</a></li>
+                <li><a href="#contact" className="hover:text-emerald-400 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4 text-lg">Support</h4>
+              <ul className="space-y-3 text-gray-400">
+                <li><a href="#" className="hover:text-emerald-400 transition-colors">Help Center</a></li>
+                <li><a href="#" className="hover:text-emerald-400 transition-colors">How to Donate</a></li>
+                <li><a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4 text-lg">Contact Info</h4>
+              <div className="space-y-3 text-gray-400">
+                <p>support@sadaka.tz</p>
+                <p>+255 (0) 700 123 456</p>
+                <p>Dar es Salaam, Tanzania</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 pt-8 text-center">
+            <p className="text-gray-400">
+              &copy; 2024 Sadaka Tanzania. All rights reserved. 
+              <span className="text-emerald-400"> Made with ❤️ for the Ummah</span>
+            </p>
           </div>
         </div>
       </footer>
@@ -238,8 +251,6 @@ const Index = () => {
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
       />
-
-      <Toaster />
     </div>
   );
 };
