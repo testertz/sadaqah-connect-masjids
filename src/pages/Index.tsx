@@ -8,7 +8,7 @@ import LoginModal from '@/components/LoginModal';
 import { mockMosques } from '@/data/mockData';
 import { Mosque } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Heart, Mosque as MosqueIcon, Users, Globe } from 'lucide-react';
+import { Heart, Building2, Users, Globe } from 'lucide-react';
 
 const Index = () => {
   const [selectedMosque, setSelectedMosque] = useState<Mosque | null>(null);
@@ -75,7 +75,7 @@ const Index = () => {
 
             <div className="text-center group hover:transform hover:scale-105 transition-all duration-300">
               <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-200">
-                <MosqueIcon className="h-10 w-10 text-emerald-600" />
+                <Building2 className="h-10 w-10 text-emerald-600" />
               </div>
               <h3 className="text-2xl font-bold text-gray-800 mb-4">Verified Masajid</h3>
               <p className="text-gray-600 leading-relaxed">
