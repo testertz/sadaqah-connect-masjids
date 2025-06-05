@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Heart, Download, Calendar, TrendingUp, User, Phone, Mail } from 'lucide-react';
+import { Heart, Download, Calendar, TrendingUp, User, Phone, Mail, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { mockDonations, mockUsers } from '@/data/mockData';
-import { Donation } from '@/types';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
 
 const UserDashboard = () => {
-  const [user] = useState(mockUsers[0]); // Current logged-in user
+  const [user] = useState(mockUsers[0]);
   const [userDonations] = useState(mockDonations.filter(d => d.donorEmail === user.email));
 
   const formatCurrency = (amount: number) => {
@@ -39,154 +39,176 @@ const UserDashboard = () => {
     }
   };
 
+  const breadcrumbs = [
+    { label: 'Home', href: '/' },
+    { label: 'Dashboard' }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back, {user.name}</h1>
-          <p className="text-gray-600">Track your donations and manage your account</p>
-        </div>
-
-        {/* Profile Summary Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card className="border-emerald-100 hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Donated</p>
-                  <p className="text-2xl font-bold text-emerald-600">{formatCurrency(user.totalDonated)}</p>
-                </div>
-                <div className="bg-emerald-100 p-3 rounded-full">
-                  <Heart className="h-6 w-6 text-emerald-600" />
+    <DashboardLayout 
+      userType="user" 
+      title={`Welcome back, ${user.name}`}
+      subtitle="Track your donations and manage your account"
+      breadcrumbs={breadcrumbs}
+    >
+      {/* Enhanced Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <p className="text-emerald-100 text-sm font-medium">Total Donated</p>
+                <p className="text-3xl font-bold">{formatCurrency(user.totalDonated)}</p>
+                <div className="flex items-center space-x-1 text-emerald-100">
+                  <ArrowUpRight className="h-4 w-4" />
+                  <span className="text-xs">+12% from last month</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              <div className="bg-white/20 p-3 rounded-xl">
+                <Heart className="h-8 w-8" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card className="border-blue-100 hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Donations</p>
-                  <p className="text-2xl font-bold text-blue-600">{user.donationCount}</p>
-                </div>
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <TrendingUp className="h-6 w-6 text-blue-600" />
+        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <p className="text-blue-100 text-sm font-medium">Total Donations</p>
+                <p className="text-3xl font-bold">{user.donationCount}</p>
+                <div className="flex items-center space-x-1 text-blue-100">
+                  <ArrowUpRight className="h-4 w-4" />
+                  <span className="text-xs">+3 this month</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              <div className="bg-white/20 p-3 rounded-xl">
+                <TrendingUp className="h-8 w-8" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card className="border-purple-100 hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Member Since</p>
-                  <p className="text-lg font-bold text-purple-600">
-                    {user.joinedDate.toLocaleDateString('en-GB', { 
-                      month: 'short', 
-                      year: 'numeric' 
-                    })}
-                  </p>
+        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <p className="text-purple-100 text-sm font-medium">Member Since</p>
+                <p className="text-2xl font-bold">
+                  {user.joinedDate.toLocaleDateString('en-GB', { 
+                    month: 'short', 
+                    year: 'numeric' 
+                  })}
+                </p>
+                <div className="flex items-center space-x-1 text-purple-100">
+                  <Calendar className="h-4 w-4" />
+                  <span className="text-xs">Active member</span>
                 </div>
+              </div>
+              <div className="bg-white/20 p-3 rounded-xl">
+                <Calendar className="h-8 w-8" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <p className="text-orange-100 text-sm font-medium">Average Donation</p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(user.donationCount > 0 ? user.totalDonated / user.donationCount : 0)}
+                </p>
+                <div className="flex items-center space-x-1 text-orange-100">
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="text-xs">Above average</span>
+                </div>
+              </div>
+              <div className="bg-white/20 p-3 rounded-xl">
+                <TrendingUp className="h-8 w-8" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* Enhanced Profile Information */}
+        <Card className="lg:col-span-1 border-0 shadow-md">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center text-lg">
+              <div className="bg-emerald-100 p-2 rounded-lg mr-3">
+                <User className="h-5 w-5 text-emerald-600" />
+              </div>
+              Profile Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+              <div className="bg-emerald-100 p-3 rounded-full">
+                <User className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-gray-500 mb-1">Full Name</p>
+                <p className="font-semibold text-gray-900">{user.name}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+              <div className="bg-blue-100 p-3 rounded-full">
+                <Mail className="h-5 w-5 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-gray-500 mb-1">Email</p>
+                <p className="font-semibold text-gray-900">{user.email}</p>
+              </div>
+            </div>
+
+            {user.phone && (
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
                 <div className="bg-purple-100 p-3 rounded-full">
-                  <Calendar className="h-6 w-6 text-purple-600" />
+                  <Phone className="h-5 w-5 text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-500 mb-1">Phone</p>
+                  <p className="font-semibold text-gray-900">{user.phone}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            )}
 
-          <Card className="border-gray-100 hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Average Donation</p>
-                  <p className="text-lg font-bold text-gray-700">
-                    {formatCurrency(user.donationCount > 0 ? user.totalDonated / user.donationCount : 0)}
-                  </p>
-                </div>
-                <div className="bg-gray-100 p-3 rounded-full">
-                  <TrendingUp className="h-6 w-6 text-gray-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            <Button className="w-full bg-emerald-600 hover:bg-emerald-700 shadow-md">
+              Update Profile
+            </Button>
+          </CardContent>
+        </Card>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Profile Information */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <User className="h-5 w-5 mr-2 text-emerald-600" />
-                Profile Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="bg-emerald-100 p-2 rounded-full">
-                  <User className="h-4 w-4 text-emerald-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Full Name</p>
-                  <p className="font-medium">{user.name}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3">
-                <div className="bg-blue-100 p-2 rounded-full">
-                  <Mail className="h-4 w-4 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Email</p>
-                  <p className="font-medium">{user.email}</p>
-                </div>
-              </div>
-
-              {user.phone && (
-                <div className="flex items-center space-x-3">
-                  <div className="bg-purple-100 p-2 rounded-full">
-                    <Phone className="h-4 w-4 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Phone</p>
-                    <p className="font-medium">{user.phone}</p>
-                  </div>
-                </div>
-              )}
-
-              <Button className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700">
-                Update Profile
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Recent Donations */}
-          <Card className="lg:col-span-2">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Recent Donations</CardTitle>
-              <Button variant="outline" size="sm" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
-                <Download className="h-4 w-4 mr-2" />
-                Export All
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {userDonations.length > 0 ? (
+        {/* Enhanced Recent Donations */}
+        <Card className="lg:col-span-2 border-0 shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardTitle className="text-lg">Recent Donations</CardTitle>
+            <Button variant="outline" size="sm" className="border-emerald-200 text-emerald-600 hover:bg-emerald-50">
+              <Download className="h-4 w-4 mr-2" />
+              Export All
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {userDonations.length > 0 ? (
+              <div className="rounded-lg border">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Mosque</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="font-semibold">Mosque</TableHead>
+                      <TableHead className="font-semibold">Amount</TableHead>
+                      <TableHead className="font-semibold">Type</TableHead>
+                      <TableHead className="font-semibold">Date</TableHead>
+                      <TableHead className="font-semibold">Status</TableHead>
+                      <TableHead className="font-semibold">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {userDonations.map((donation) => (
-                      <TableRow key={donation.id}>
+                      <TableRow key={donation.id} className="hover:bg-gray-50">
                         <TableCell className="font-medium">{donation.mosqueName}</TableCell>
                         <TableCell className="font-bold text-emerald-600">
                           {formatCurrency(donation.amount)}
@@ -205,7 +227,7 @@ const UserDashboard = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm" className="text-emerald-600 hover:text-emerald-700">
+                          <Button variant="ghost" size="sm" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
                             <Download className="h-4 w-4" />
                           </Button>
                         </TableCell>
@@ -213,21 +235,23 @@ const UserDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
-              ) : (
-                <div className="text-center py-8">
-                  <Heart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-600 mb-2">No donations yet</h3>
-                  <p className="text-gray-500 mb-4">Start your journey of giving today</p>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
-                    Make Your First Donation
-                  </Button>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="bg-gray-100 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                  <Heart className="h-12 w-12 text-gray-400" />
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                <h3 className="text-xl font-semibold text-gray-600 mb-2">No donations yet</h3>
+                <p className="text-gray-500 mb-6">Start your journey of giving today</p>
+                <Button className="bg-emerald-600 hover:bg-emerald-700 shadow-md">
+                  Make Your First Donation
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

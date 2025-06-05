@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Users, 
   Building2 as MosqueIcon, 
@@ -17,13 +18,16 @@ import {
   Trash2,
   CheckCircle,
   Clock,
-  XCircle
+  XCircle,
+  ArrowUpRight,
+  ArrowDownRight,
+  Activity
 } from 'lucide-react';
 import { mockAdminStats, mockMosques, mockDonations, mockUsers } from '@/data/mockData';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
 
 const AdminDashboard = () => {
   const [stats] = useState(mockAdminStats);
-  const [activeTab, setActiveTab] = useState('overview');
   const [showAddMosque, setShowAddMosque] = useState(false);
 
   const formatCurrency = (amount: number) => {
@@ -47,360 +51,368 @@ const AdminDashboard = () => {
     }
   };
 
-  const TabButton = ({ id, label, isActive, onClick }: any) => (
-    <button
-      onClick={() => onClick(id)}
-      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-        isActive 
-          ? 'bg-emerald-600 text-white shadow-md' 
-          : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-600'
-      }`}
-    >
-      {label}
-    </button>
-  );
+  const breadcrumbs = [
+    { label: 'Admin', href: '/admin' },
+    { label: 'Dashboard' }
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage the Sadaka platform and monitor donations</p>
-        </div>
+    <DashboardLayout 
+      userType="admin" 
+      title="Admin Dashboard"
+      subtitle="Manage the Sadaka platform and monitor donations"
+      breadcrumbs={breadcrumbs}
+    >
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4 lg:w-[400px]">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="mosques">Mosques</TabsTrigger>
+          <TabsTrigger value="donations">Donations</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+        </TabsList>
 
-        {/* Navigation Tabs */}
-        <div className="flex space-x-2 mb-8 bg-white p-1 rounded-lg shadow-sm w-fit">
-          <TabButton id="overview" label="Overview" isActive={activeTab === 'overview'} onClick={setActiveTab} />
-          <TabButton id="mosques" label="Mosques" isActive={activeTab === 'mosques'} onClick={setActiveTab} />
-          <TabButton id="donations" label="Donations" isActive={activeTab === 'donations'} onClick={setActiveTab} />
-          <TabButton id="users" label="Users" isActive={activeTab === 'users'} onClick={setActiveTab} />
-        </div>
-
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <>
-            {/* Stats Cards */}
-            <div className="grid md:grid-cols-4 gap-6 mb-8">
-              <Card className="border-emerald-100 hover:shadow-lg transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Total Donations</p>
-                      <p className="text-2xl font-bold text-emerald-600">{formatCurrency(stats.totalDonations)}</p>
-                    </div>
-                    <div className="bg-emerald-100 p-3 rounded-full">
-                      <DollarSign className="h-6 w-6 text-emerald-600" />
+        <TabsContent value="overview" className="space-y-4">
+          {/* Enhanced Stats Cards */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <p className="text-emerald-100 text-sm font-medium">Total Donations</p>
+                    <p className="text-3xl font-bold">{formatCurrency(stats.totalDonations)}</p>
+                    <div className="flex items-center space-x-1 text-emerald-100">
+                      <ArrowUpRight className="h-4 w-4" />
+                      <span className="text-xs">+8.2% from last month</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="bg-white/20 p-3 rounded-xl">
+                    <DollarSign className="h-8 w-8" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card className="border-blue-100 hover:shadow-lg transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Total Mosques</p>
-                      <p className="text-2xl font-bold text-blue-600">{stats.totalMosques}</p>
-                    </div>
-                    <div className="bg-blue-100 p-3 rounded-full">
-                      <MosqueIcon className="h-6 w-6 text-blue-600" />
+            <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <p className="text-blue-100 text-sm font-medium">Total Mosques</p>
+                    <p className="text-3xl font-bold">{stats.totalMosques}</p>
+                    <div className="flex items-center space-x-1 text-blue-100">
+                      <ArrowUpRight className="h-4 w-4" />
+                      <span className="text-xs">+2 new this month</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="bg-white/20 p-3 rounded-xl">
+                    <MosqueIcon className="h-8 w-8" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card className="border-purple-100 hover:shadow-lg transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Total Users</p>
-                      <p className="text-2xl font-bold text-purple-600">{stats.totalUsers}</p>
-                    </div>
-                    <div className="bg-purple-100 p-3 rounded-full">
-                      <Users className="h-6 w-6 text-purple-600" />
+            <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <p className="text-purple-100 text-sm font-medium">Total Users</p>
+                    <p className="text-3xl font-bold">{stats.totalUsers}</p>
+                    <div className="flex items-center space-x-1 text-purple-100">
+                      <ArrowUpRight className="h-4 w-4" />
+                      <span className="text-xs">+15 new users</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="bg-white/20 p-3 rounded-xl">
+                    <Users className="h-8 w-8" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card className="border-orange-100 hover:shadow-lg transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Growth Rate</p>
-                      <p className="text-2xl font-bold text-orange-600">+12.5%</p>
-                    </div>
-                    <div className="bg-orange-100 p-3 rounded-full">
-                      <TrendingUp className="h-6 w-6 text-orange-600" />
+            <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <p className="text-orange-100 text-sm font-medium">Growth Rate</p>
+                    <p className="text-3xl font-bold">+12.5%</p>
+                    <div className="flex items-center space-x-1 text-orange-100">
+                      <Activity className="h-4 w-4" />
+                      <span className="text-xs">Platform growth</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <div className="bg-white/20 p-3 rounded-xl">
+                    <TrendingUp className="h-8 w-8" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-            {/* Recent Activity */}
-            <div className="grid lg:grid-cols-2 gap-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Donations</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {stats.recentDonations.map((donation) => (
-                      <div key={donation.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
+          {/* Enhanced Activity Overview */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Recent Donations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {stats.recentDonations.map((donation) => (
+                    <div key={donation.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:shadow-sm transition-shadow">
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-white p-2 rounded-full shadow-sm">
                           {getStatusIcon(donation.status)}
-                          <div>
-                            <p className="font-medium">{donation.mosqueName}</p>
-                            <p className="text-sm text-gray-600">{donation.donorName}</p>
-                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold text-emerald-600">{formatCurrency(donation.amount)}</p>
-                          <p className="text-xs text-gray-500">{donation.timestamp.toLocaleDateString()}</p>
+                        <div>
+                          <p className="font-semibold text-gray-900">{donation.mosqueName}</p>
+                          <p className="text-sm text-gray-600">{donation.donorName}</p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      <div className="text-right">
+                        <p className="font-bold text-emerald-600 text-lg">{formatCurrency(donation.amount)}</p>
+                        <p className="text-xs text-gray-500">{donation.timestamp.toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Top Performing Mosques</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {stats.topMosques.map((mosque, index) => (
-                      <div key={mosque.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="bg-emerald-100 w-8 h-8 rounded-full flex items-center justify-center">
-                            <span className="font-bold text-emerald-600">#{index + 1}</span>
-                          </div>
-                          <div>
-                            <p className="font-medium">{mosque.name}</p>
-                            <p className="text-sm text-gray-600">{mosque.location}</p>
-                          </div>
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Top Performing Mosques</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {stats.topMosques.map((mosque, index) => (
+                    <div key={mosque.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:shadow-sm transition-shadow">
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-emerald-100 w-10 h-10 rounded-full flex items-center justify-center shadow-sm">
+                          <span className="font-bold text-emerald-600">#{index + 1}</span>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold text-emerald-600">{formatCurrency(mosque.currentDonations)}</p>
-                          <p className="text-xs text-gray-500">
-                            {Math.round((mosque.currentDonations / mosque.donationGoal) * 100)}% funded
-                          </p>
+                        <div>
+                          <p className="font-semibold text-gray-900">{mosque.name}</p>
+                          <p className="text-sm text-gray-600">{mosque.location}</p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </>
-        )}
+                      <div className="text-right">
+                        <p className="font-bold text-emerald-600 text-lg">{formatCurrency(mosque.currentDonations)}</p>
+                        <p className="text-xs text-gray-500">
+                          {Math.round((mosque.currentDonations / mosque.donationGoal) * 100)}% funded
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
-        {/* Mosques Tab */}
-        {activeTab === 'mosques' && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Manage Mosques</CardTitle>
+        <TabsContent value="mosques" className="space-y-4">
+          <Card className="border-0 shadow-md">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardTitle className="text-lg">Manage Mosques</CardTitle>
               <Button 
                 onClick={() => setShowAddMosque(true)}
-                className="bg-emerald-600 hover:bg-emerald-700"
+                className="bg-emerald-600 hover:bg-emerald-700 shadow-md"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Mosque
               </Button>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Region</TableHead>
-                    <TableHead>Donations</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mockMosques.map((mosque) => (
-                    <TableRow key={mosque.id}>
-                      <TableCell className="font-medium">{mosque.name}</TableCell>
-                      <TableCell>{mosque.location}</TableCell>
-                      <TableCell>{mosque.region}</TableCell>
-                      <TableCell className="font-bold text-emerald-600">
-                        {formatCurrency(mosque.currentDonations)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={mosque.verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
-                          {mosque.verified ? 'Verified' : 'Pending'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+              <div className="rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="font-semibold">Name</TableHead>
+                      <TableHead className="font-semibold">Location</TableHead>
+                      <TableHead className="font-semibold">Region</TableHead>
+                      <TableHead className="font-semibold">Donations</TableHead>
+                      <TableHead className="font-semibold">Status</TableHead>
+                      <TableHead className="font-semibold">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {mockMosques.map((mosque) => (
+                      <TableRow key={mosque.id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">{mosque.name}</TableCell>
+                        <TableCell>{mosque.location}</TableCell>
+                        <TableCell>{mosque.region}</TableCell>
+                        <TableCell className="font-bold text-emerald-600">
+                          {formatCurrency(mosque.currentDonations)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={mosque.verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                            {mosque.verified ? 'Verified' : 'Pending'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button variant="ghost" size="sm" className="hover:bg-blue-50">
+                              <Edit className="h-4 w-4 text-blue-600" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="hover:bg-red-50">
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
-        )}
+        </TabsContent>
 
-        {/* Donations Tab */}
-        {activeTab === 'donations' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>All Donations</CardTitle>
+        <TabsContent value="donations" className="space-y-4">
+          <Card className="border-0 shadow-md">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">All Donations</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Donor</TableHead>
-                    <TableHead>Mosque</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Payment</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mockDonations.map((donation) => (
-                    <TableRow key={donation.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{donation.donorName}</p>
-                          <p className="text-sm text-gray-600">{donation.donorEmail}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">{donation.mosqueName}</TableCell>
-                      <TableCell className="font-bold text-emerald-600">
-                        {formatCurrency(donation.amount)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className="bg-blue-100 text-blue-800">
-                          {donation.type.charAt(0).toUpperCase() + donation.type.slice(1)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{donation.timestamp.toLocaleDateString('en-GB')}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          {getStatusIcon(donation.status)}
-                          <span className="capitalize">{donation.status}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="capitalize">{donation.paymentMethod}</p>
-                          <p className="text-sm text-gray-600">{donation.paymentDetails}</p>
-                        </div>
-                      </TableCell>
+              <div className="rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="font-semibold">Donor</TableHead>
+                      <TableHead className="font-semibold">Mosque</TableHead>
+                      <TableHead className="font-semibold">Amount</TableHead>
+                      <TableHead className="font-semibold">Type</TableHead>
+                      <TableHead className="font-semibold">Date</TableHead>
+                      <TableHead className="font-semibold">Status</TableHead>
+                      <TableHead className="font-semibold">Payment</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {mockDonations.map((donation) => (
+                      <TableRow key={donation.id} className="hover:bg-gray-50">
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{donation.donorName}</p>
+                            <p className="text-sm text-gray-600">{donation.donorEmail}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">{donation.mosqueName}</TableCell>
+                        <TableCell className="font-bold text-emerald-600">
+                          {formatCurrency(donation.amount)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="bg-blue-100 text-blue-800">
+                            {donation.type.charAt(0).toUpperCase() + donation.type.slice(1)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{donation.timestamp.toLocaleDateString('en-GB')}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            {getStatusIcon(donation.status)}
+                            <span className="capitalize">{donation.status}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="capitalize">{donation.paymentMethod}</p>
+                            <p className="text-sm text-gray-600">{donation.paymentDetails}</p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
-        )}
+        </TabsContent>
 
-        {/* Users Tab */}
-        {activeTab === 'users' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>User Management</CardTitle>
+        <TabsContent value="users" className="space-y-4">
+          <Card className="border-0 shadow-md">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">User Management</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Total Donated</TableHead>
-                    <TableHead>Donations</TableHead>
-                    <TableHead>Join Date</TableHead>
-                    <TableHead>Role</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mockUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.phone || 'N/A'}</TableCell>
-                      <TableCell className="font-bold text-emerald-600">
-                        {formatCurrency(user.totalDonated)}
-                      </TableCell>
-                      <TableCell>{user.donationCount}</TableCell>
-                      <TableCell>{user.joinedDate.toLocaleDateString('en-GB')}</TableCell>
-                      <TableCell>
-                        <Badge className={user.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}>
-                          {user.isAdmin ? 'Admin' : 'User'}
-                        </Badge>
-                      </TableCell>
+              <div className="rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="font-semibold">Name</TableHead>
+                      <TableHead className="font-semibold">Email</TableHead>
+                      <TableHead className="font-semibold">Phone</TableHead>
+                      <TableHead className="font-semibold">Total Donated</TableHead>
+                      <TableHead className="font-semibold">Donations</TableHead>
+                      <TableHead className="font-semibold">Join Date</TableHead>
+                      <TableHead className="font-semibold">Role</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {mockUsers.map((user) => (
+                      <TableRow key={user.id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.phone || 'N/A'}</TableCell>
+                        <TableCell className="font-bold text-emerald-600">
+                          {formatCurrency(user.totalDonated)}
+                        </TableCell>
+                        <TableCell>{user.donationCount}</TableCell>
+                        <TableCell>{user.joinedDate.toLocaleDateString('en-GB')}</TableCell>
+                        <TableCell>
+                          <Badge className={user.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}>
+                            {user.isAdmin ? 'Admin' : 'User'}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
-        )}
+        </TabsContent>
+      </Tabs>
 
-        {/* Add Mosque Modal (simplified) */}
-        {showAddMosque && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <Card className="w-full max-w-md">
-              <CardHeader>
-                <CardTitle>Add New Mosque</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Mosque Name</Label>
-                  <Input id="name" placeholder="Enter mosque name" />
-                </div>
-                <div>
-                  <Label htmlFor="location">Location</Label>
-                  <Input id="location" placeholder="Enter location" />
-                </div>
-                <div>
-                  <Label htmlFor="region">Region</Label>
-                  <Input id="region" placeholder="Enter region" />
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea id="description" placeholder="Enter description" />
-                </div>
-                <div className="flex space-x-3">
-                  <Button 
-                    onClick={() => setShowAddMosque(false)}
-                    variant="outline" 
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={() => setShowAddMosque(false)}
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    Add Mosque
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
-    </div>
+      {/* Enhanced Add Mosque Modal */}
+      {showAddMosque && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md border-0 shadow-xl">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Add New Mosque</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="name" className="text-sm font-medium">Mosque Name</Label>
+                <Input id="name" placeholder="Enter mosque name" className="mt-1" />
+              </div>
+              <div>
+                <Label htmlFor="location" className="text-sm font-medium">Location</Label>
+                <Input id="location" placeholder="Enter location" className="mt-1" />
+              </div>
+              <div>
+                <Label htmlFor="region" className="text-sm font-medium">Region</Label>
+                <Input id="region" placeholder="Enter region" className="mt-1" />
+              </div>
+              <div>
+                <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                <Textarea id="description" placeholder="Enter description" className="mt-1" />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button 
+                  onClick={() => setShowAddMosque(false)}
+                  variant="outline" 
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => setShowAddMosque(false)}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                >
+                  Add Mosque
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </DashboardLayout>
   );
 };
 
