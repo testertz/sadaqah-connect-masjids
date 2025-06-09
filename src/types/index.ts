@@ -39,6 +39,7 @@ export interface User {
   donationCount: number;
   isAdmin: boolean;
   joinedDate: Date;
+  status: 'active' | 'inactive';
 }
 
 export interface AdminStats {

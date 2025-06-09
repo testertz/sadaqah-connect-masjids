@@ -133,7 +133,8 @@ export const mockUsers: User[] = [
     totalDonated: 2500000,
     donationCount: 8,
     isAdmin: false,
-    joinedDate: new Date('2024-01-15')
+    joinedDate: new Date('2024-01-15'),
+    status: 'active'
   },
   {
     id: '2',
@@ -142,7 +143,41 @@ export const mockUsers: User[] = [
     totalDonated: 0,
     donationCount: 0,
     isAdmin: true,
-    joinedDate: new Date('2023-12-01')
+    joinedDate: new Date('2023-12-01'),
+    status: 'active'
+  },
+  {
+    id: '3',
+    name: 'Fatuma Mohamed',
+    email: 'fatuma@example.com',
+    phone: '+255 756 789 012',
+    totalDonated: 1800000,
+    donationCount: 12,
+    isAdmin: false,
+    joinedDate: new Date('2024-02-10'),
+    status: 'active'
+  },
+  {
+    id: '4',
+    name: 'Ibrahim Mwalimu',
+    email: 'ibrahim@example.com',
+    phone: '+255 713 456 789',
+    totalDonated: 950000,
+    donationCount: 5,
+    isAdmin: false,
+    joinedDate: new Date('2024-03-05'),
+    status: 'inactive'
+  },
+  {
+    id: '5',
+    name: 'Aisha Ally',
+    email: 'aisha@example.com',
+    phone: '+255 765 432 108',
+    totalDonated: 3200000,
+    donationCount: 15,
+    isAdmin: false,
+    joinedDate: new Date('2024-01-28'),
+    status: 'active'
   }
 ];
 
