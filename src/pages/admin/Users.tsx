@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Users as UsersIcon, UserPlus, Search, Filter, MoreHorizontal, Edit, Trash2, Eye, TrendingUp } from 'lucide-react';
 import { mockUsers } from '@/data/mockData';
+import { User } from '@/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -67,9 +68,12 @@ const Users = () => {
       setIsEditModalOpen(false);
     } else {
       // Create new user
-      const newUser = {
+      const newUser: User = {
         id: String(users.length + 1),
-        ...data,
+        name: data.name,
+        email: data.email,
+        phone: data.phone || undefined,
+        status: data.status,
         totalDonated: 0,
         donationCount: 0,
         isAdmin: false,
